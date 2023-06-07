@@ -9,22 +9,39 @@
 
 variable "prefix" {
   description = "This prefix will be included in the name of most resources."
+  default     = "tfc-demo"
 }
 
 variable "region" {
   description = "The region where the resources are created."
-  default     = "us-east-1"
+  default     = "ap-southeast-2"
 }
 
-variable "address_space" {
-  description = "The address space that is used by the virtual network. You can supply more than one address space. Changing this forces a new resource to be created."
-  default     = "10.0.0.0/16"
+variable "vpc_id" {
+  default = "vpc-0531ae2ff91615b44"
 }
 
-variable "subnet_prefix" {
-  description = "The address prefix to use for the subnet."
-  default     = "10.0.10.0/24"
+variable "subnet_id" {
+  default = "subnet-06fe879f48ebd43e9"
 }
+
+variable "igw_id" {
+  default = "igw-0dc5fec648bd56f6e"
+}
+
+variable "route_table_id" {
+  default = "rtb-058b1836ab48d818e"
+}
+
+# variable "address_space" {
+#   description = "The address space that is used by the virtual network. You can supply more than one address space. Changing this forces a new resource to be created."
+#   default     = "10.0.0.0/16"
+# }
+
+# variable "subnet_prefix" {
+#   description = "The address prefix to use for the subnet."
+#   default     = "10.0.10.0/24"
+# }
 
 variable "instance_type" {
   description = "Specifies the AWS instance type."

@@ -13,29 +13,9 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_vpc" "hashicat" {
-  cidr_block           = var.address_space
-  enable_dns_hostnames = true
-
-  tags = {
-    name        = "${var.prefix}-vpc-${var.region}"
-    environment = "Production"
-  }
-}
-
-resource "aws_subnet" "hashicat" {
-  vpc_id     = aws_vpc.hashicat.id
-  cidr_block = var.subnet_prefix
-
-  tags = {
-    name = "${var.prefix}-subnet"
-  }
-}
-
 resource "aws_security_group" "hashicat" {
-  name = "${var.prefix}-security-group"
-
-  vpc_id = aws_vpc.hashicat.id
+  name   = "${var.prefix}-security-group"
+  vpc_id = var.vpc_id
 
   ingress {
     from_port   = 22
@@ -71,34 +51,11 @@ resource "aws_security_group" "hashicat" {
   }
 }
 
-resource "aws_internet_gateway" "hashicat" {
-  vpc_id = aws_vpc.hashicat.id
-
-  tags = {
-    Name = "${var.prefix}-internet-gateway"
-  }
-}
-
-resource "aws_route_table" "hashicat" {
-  vpc_id = aws_vpc.hashicat.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.hashicat.id
-  }
-}
-
-resource "aws_route_table_association" "hashicat" {
-  subnet_id      = aws_subnet.hashicat.id
-  route_table_id = aws_route_table.hashicat.id
-}
-
 data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
-    name = "name"
-    #values = ["ubuntu/images/hvm-ssd/ubuntu-disco-19.04-amd64-server-*"]
+    name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
   }
 
@@ -107,7 +64,7 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["099720109477"]
 }
 
 resource "aws_eip" "hashicat" {
@@ -125,11 +82,12 @@ resource "aws_instance" "hashicat" {
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.hashicat.key_name
   associate_public_ip_address = true
-  subnet_id                   = aws_subnet.hashicat.id
+  subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.hashicat.id]
 
   tags = {
-    Name = "${var.prefix}-hashicat-instance"
+    Name        = "${var.prefix}-hashicat-instance"
+    Environment = "dev"
   }
 }
 
