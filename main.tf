@@ -18,7 +18,7 @@ resource "aws_security_group" "hashicat" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port   = 22
+    from_port   = 21
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
@@ -88,6 +88,7 @@ resource "aws_instance" "hashicat" {
   tags = {
     Name        = "${var.prefix}-hashicat-instance"
     Environment = "dev"
+    Department = "Infra"
   }
 }
 
